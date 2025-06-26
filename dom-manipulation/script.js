@@ -33,6 +33,7 @@ function addQuote() {
   if (quoteText && quoteCategory) {
     quotes.push({ text: quoteText, category: quoteCategory });
     saveQuotes();
+    populateCategories();
     document.getElementById('newQuoteText').value = '';
     document.getElementById('newQuoteCategory').value = '';
   }
@@ -80,9 +81,8 @@ function importFromJsonFile(event) {
       if (Array.isArray(importedQuotes)) {
         quotes.push(...importedQuotes);
         saveQuotes();
-        console.log("Quotes imported successfully.");
-      } else {
-        console.error("Invalid file format.");
+        populateCategories();
+        filterQuotes();
       }
     } catch {
       console.error("Failed to parse JSON.");
@@ -91,6 +91,44 @@ function importFromJsonFile(event) {
   fileReader.readAsText(event.target.files[0]);
 }
 
+function populateCategories() {
+  const categoryFilter = document.getElementById('categoryFilter');
+  const categories = [...new Set(quotes.map(q => q.category))];
+
+  categoryFilter.innerHTML = '<option value="all">All Categories</option>';
+  categories.forEach(category => {
+    const option = document.createElement('option');
+    option.value = category;
+    option.textContent = category;
+    categoryFilter.appendChild(option);
+  });
+
+  const savedCategory = localStorage.getItem('selectedCategory');
+  if (savedCategory) {
+    categoryFilter.value = savedCategory;
+    filterQuotes();
+  }
+}
+
+function filterQuotes() {
+  const selectedCategory = document.getElementById('categoryFilter').value;
+  localStorage.setItem('selectedCategory', selectedCategory);
+
+  const filtered = selectedCategory === "all"
+    ? quotes
+    : quotes.filter(q => q.category === selectedCategory);
+
+  const quoteDisplay = document.getElementById('quoteDisplay');
+  quoteDisplay.innerHTML = "";
+
+  filtered.forEach(quote => {
+    const quoteElement = document.createElement('p');
+    quoteElement.innerHTML = `"${quote.text}" - ${quote.category}`;
+    quoteDisplay.appendChild(quoteElement);
+  });
+}
+
 loadQuotes();
 createAddQuoteForm();
+populateCategories();
 document.getElementById('newQuote').addEventListener('click', showRandomQuote);
