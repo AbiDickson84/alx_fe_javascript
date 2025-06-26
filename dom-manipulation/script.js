@@ -7,11 +7,23 @@ let quotes = [
   { text: "You miss 100% of the shots you don’t take.", category: "Motivation" }
 ];
 
+function loadQuotes() {
+  const saved = localStorage.getItem('quotes');
+  if (saved) {
+    quotes = JSON.parse(saved);
+  }
+}
+
+function saveQuotes() {
+  localStorage.setItem('quotes', JSON.stringify(quotes));
+}
+
 function showRandomQuote() {
   const randomIndex = Math.floor(Math.random() * quotes.length);
   const quote = quotes[randomIndex];
   const quoteDisplay = document.getElementById('quoteDisplay');
   quoteDisplay.innerHTML = `"${quote.text}" - ${quote.category}`;
+  sessionStorage.setItem('lastQuote', JSON.stringify(quote));
 }
 
 function addQuote() {
@@ -20,11 +32,9 @@ function addQuote() {
 
   if (quoteText && quoteCategory) {
     quotes.push({ text: quoteText, category: quoteCategory });
-    console.log("Quote added.");
+    saveQuotes();
     document.getElementById('newQuoteText').value = '';
     document.getElementById('newQuoteCategory').value = '';
-  } else {
-    console.log("Both fields are required.");
   }
 }
 
@@ -52,5 +62,35 @@ function createAddQuoteForm() {
   document.body.appendChild(formContainer);
 }
 
+function exportToJsonFile() {
+  const blob = new Blob([JSON.stringify(quotes)], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = "quotes.json";
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function importFromJsonFile(event) {
+  const fileReader = new FileReader();
+  fileReader.onload = function(e) {
+    try {
+      const importedQuotes = JSON.parse(e.target.result);
+      if (Array.isArray(importedQuotes)) {
+        quotes.push(...importedQuotes);
+        saveQuotes();
+        console.log("Quotes imported successfully.");
+      } else {
+        console.error("Invalid file format.");
+      }
+    } catch {
+      console.error("Failed to parse JSON.");
+    }
+  };
+  fileReader.readAsText(event.target.files[0]);
+}
+
+loadQuotes();
 createAddQuoteForm();
 document.getElementById('newQuote').addEventListener('click', showRandomQuote);
