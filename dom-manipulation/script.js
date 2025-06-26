@@ -34,6 +34,7 @@ function addQuote() {
     quotes.push({ text: quoteText, category: quoteCategory });
     saveQuotes();
     populateCategories();
+    filterQuotes();
     document.getElementById('newQuoteText').value = '';
     document.getElementById('newQuoteCategory').value = '';
   }
@@ -128,7 +129,50 @@ function filterQuotes() {
   });
 }
 
+function syncWithServer() {
+  setInterval(fetchFromServer, 10000); // Simulate every 10s
+}
+
+function fetchFromServer() {
+  const serverQuotes = [
+    { text: "Server quote A", category: "Server" },
+    { text: "Server quote B", category: "Sync" }
+  ];
+  resolveConflicts(serverQuotes);
+}
+
+function resolveConflicts(serverQuotes) {
+  let updated = false;
+
+  serverQuotes.forEach(serverQuote => {
+    const exists = quotes.some(localQuote =>
+      localQuote.text === serverQuote.text &&
+      localQuote.category === serverQuote.category
+    );
+    if (!exists) {
+      quotes.push(serverQuote);
+      updated = true;
+    }
+  });
+
+  if (updated) {
+    saveQuotes();
+    populateCategories();
+    filterQuotes();
+    showConflictNotification();
+  }
+}
+
+function showConflictNotification() {
+  const note = document.createElement('p');
+  note.textContent = "Quotes synced with server. Updates were merged.";
+  note.style.color = 'green';
+  document.body.insertBefore(note, document.getElementById('quoteDisplay'));
+  setTimeout(() => note.remove(), 5000);
+}
+
 loadQuotes();
 createAddQuoteForm();
 populateCategories();
 document.getElementById('newQuote').addEventListener('click', showRandomQuote);
+syncWithServer();
