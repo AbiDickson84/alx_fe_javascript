@@ -7,7 +7,7 @@ let quotes = [
   { text: "You miss 100% of the shots you don’t take.", category: "Motivation" }
 ];
 
-function displayRandomQuote() {
+function showRandomQuote() {
   const randomIndex = Math.floor(Math.random() * quotes.length);
   const quote = quotes[randomIndex];
   const quoteDisplay = document.getElementById('quoteDisplay');
@@ -20,7 +20,7 @@ function addQuote() {
 
   if (quoteText && quoteCategory) {
     quotes.push({ text: quoteText, category: quoteCategory });
-    console.log("Quote added!");
+    console.log("Quote added.");
     document.getElementById('newQuoteText').value = '';
     document.getElementById('newQuoteCategory').value = '';
   } else {
@@ -53,4 +53,4 @@ function createAddQuoteForm() {
 }
 
 createAddQuoteForm();
-document.getElementById('newQuote').addEventListener('click', displayRandomQuote);
+document.getElementById('newQuote').addEventListener('click', showRandomQuote);
