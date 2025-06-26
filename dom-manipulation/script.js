@@ -1,4 +1,3 @@
-// ✅ Quote array
 let quotes = [
   { text: "The only way to do great work is to love what you do.", category: "Motivation" },
   { text: "Stay hungry, stay foolish.", category: "Inspiration" },
@@ -8,7 +7,6 @@ let quotes = [
   { text: "You miss 100% of the shots you don’t take.", category: "Motivation" }
 ];
 
-// ✅ Required by checker: Function to display a random quote using innerHTML
 function displayRandomQuote() {
   const randomIndex = Math.floor(Math.random() * quotes.length);
   const quote = quotes[randomIndex];
@@ -16,22 +14,20 @@ function displayRandomQuote() {
   quoteDisplay.innerHTML = `"${quote.text}" - ${quote.category}`;
 }
 
-// ✅ Add a new quote to the array
 function addQuote() {
   const quoteText = document.getElementById('newQuoteText').value.trim();
   const quoteCategory = document.getElementById('newQuoteCategory').value.trim();
 
   if (quoteText && quoteCategory) {
     quotes.push({ text: quoteText, category: quoteCategory });
-    alert("Quote added!");
+    console.log("Quote added!");
     document.getElementById('newQuoteText').value = '';
     document.getElementById('newQuoteCategory').value = '';
   } else {
-    alert("Please fill in both fields.");
+    console.log("Both fields are required.");
   }
 }
 
-// ✅ Required by checker: Create form dynamically using DOM methods
 function createAddQuoteForm() {
   const formContainer = document.createElement('div');
 
@@ -56,8 +52,5 @@ function createAddQuoteForm() {
   document.body.appendChild(formContainer);
 }
 
-// ✅ Call on page load
 createAddQuoteForm();
-
-// ✅ Event listener to trigger random quote display
 document.getElementById('newQuote').addEventListener('click', displayRandomQuote);
